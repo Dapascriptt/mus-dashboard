@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import axios from "axios";
+import api from "../services/api";
 
 export const useAnalyticsStore = defineStore("analytics", {
   state: () => ({
@@ -22,7 +22,7 @@ export const useAnalyticsStore = defineStore("analytics", {
       this.loading = true;
       this.error = "";
       try {
-        const { data } = await axios.get("http://localhost:5000/api/analytics/overview");
+        const { data } = await api.get("/analytics/overview");
         this.overview = data;
       } catch (err) {
         console.error(err);
@@ -34,7 +34,7 @@ export const useAnalyticsStore = defineStore("analytics", {
 
     async fetchRevenue() {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/analytics/revenue");
+        const { data } = await api.get("/analytics/revenue");
         this.revenueByDay = data;
       } catch (err) {
         console.error(err);
@@ -43,7 +43,7 @@ export const useAnalyticsStore = defineStore("analytics", {
 
     async fetchOrderStatus() {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/analytics/order-status");
+        const { data } = await api.get("/analytics/order-status");
         this.orderStatus = data;
       } catch (err) {
         console.error(err);
@@ -52,7 +52,7 @@ export const useAnalyticsStore = defineStore("analytics", {
 
     async fetchRevenueByStatus() {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/analytics/customers");
+        const { data } = await api.get("/analytics/customers");
         this.revenueByStatus = data;
       } catch (err) {
         console.error(err);
@@ -61,7 +61,7 @@ export const useAnalyticsStore = defineStore("analytics", {
 
     async fetchTopProducts() {
       try {
-        const { data } = await axios.get("http://localhost:5000/api/analytics/top-products");
+        const { data } = await api.get("/analytics/top-products");
         this.topProducts = data;
       } catch (err) {
         console.error(err);
