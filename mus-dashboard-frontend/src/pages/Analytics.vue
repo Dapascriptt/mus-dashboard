@@ -99,7 +99,7 @@
 <script setup>
 import { ref, onMounted, h } from "vue";
 import LineChart from "../components/charts/LineChart.vue";
-import BarChart from "../components/charts/Barchart.vue"; // pastikan sesuai nama file-mu
+import BarChart from "../components/charts/BarChart.vue";
 import PieChart from "../components/charts/PieChart.vue";
 import {
   getAnalyticsOverview,

@@ -13,6 +13,7 @@ This backend is an Express + MongoDB API. It now ships with a Netlify Functions 
 5. Tambahkan environment variable di Site settings → Build & deploy → Environment:
    - `MONGODB_URI` – connection string MongoDB.
    - `JWT_SECRET` – secret key untuk JWT.
+   - Tidak perlu men-set `PORT` di Netlify karena Functions mengabaikannya; `PORT` hanya opsional saat menjalankan server lokal (default 5000).
 6. Deploy. Fungsi akan tersedia di `/.netlify/functions/api`, dan berkat redirect, frontend cukup memanggil `/api/...` di domain Netlify yang sama.
 7. Koneksi MongoDB dibuat secara lazy per-request dan di-reuse antar invocations sehingga tetap stateless di lingkungan serverless.
 
