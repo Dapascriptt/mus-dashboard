@@ -113,20 +113,21 @@ const app = express();
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
-// Saat dijalankan sebagai Netlify Function, path bisa berbentuk
-// "/.netlify/functions/api/..." atau variasi dengan prefix ganda.
-// Middleware ini menormalkan kembali ke "/api/..." agar routing Express
-// tetap sesuai meski ada tambahan prefix.
+
+// Normalisasi path untuk Netlify Functions → /api/...
 app.use((req, res, next) => {
   const normalize = (value = "") =>
     value.replace(/\/.netlify\/functions\/api(\/)?/gi, '/api$1');
 
   req.url = normalize(req.url);
-  // Simpan versi ternormalisasi hanya untuk debug jika diperlukan
+  // opsional buat debug
   req.normalizedOriginalUrl = normalize(req.originalUrl);
   next();
 });
+
 app.use(ensureDbConnection);
+
+// Debug: list user yang dibaca dari MongoDB
 app.get('/api/debug/users', async (req, res) => {
   try {
     const users = await User.find().select('username name createdAt');
@@ -138,7 +139,6 @@ app.get('/api/debug/users', async (req, res) => {
     res.status(500).json({ message: 'Debug error', error: err.message });
   }
 });
-
 
 // ROUTE TEST
 app.get('/', (req, res) => {
@@ -186,28 +186,27 @@ app.post("/api/auth/login", async (req, res) => {
     const { username, password } = req.body;
 
     const normalizedUsername = (username || "").trim();
-    const user = await User.findOne({
-      username: new RegExp(`^${normalizedUsername.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
-    });
+
+    // 🔥 GANTI: pakai query simpel persis sama dengan username yang dikirim
+    const user = await User.findOne({ username: normalizedUsername });
 
     if (!user) return res.status(400).json({ message: "User not found" });
 
     const storedPassword = user.password || "";
-
     let match = false;
 
-    // 1) Coba bandingkan sebagai hash bcrypt (termasuk jika user.password tidak berawalan $2)
+    // 1) Coba compare sebagai hash bcrypt
     try {
       match = await bcrypt.compare(password, storedPassword);
     } catch (err) {
-      // Abaikan error compare, lanjut ke pengecekan plain text
+      // Abaikan error compare, lanjut cek plaintext
     }
 
-    // 2) Fallback: terima password plaintext yang mungkin tersimpan di DB lama
+    // 2) Fallback: support password plaintext lama
     if (!match && password === storedPassword) {
       match = true;
 
-      // Hash ulang supaya login berikutnya memakai bcrypt
+      // Hash ulang supaya next login pakai bcrypt
       const hashed = await bcrypt.hash(password, 10);
       user.password = hashed;
       await user.save();
@@ -456,7 +455,6 @@ app.post("/api/orders", async (req, res) => {
     res.status(500).json({ message: "Gagal membuat order" });
   }
 });
-
 
 // UPDATE ORDER STATUS (dan restore stock saat cancelled)
 app.put('/api/orders/:id', async (req, res) => {
