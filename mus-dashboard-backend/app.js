@@ -29,30 +29,50 @@ async function ensureDefaultUser() {
   if (defaultUserPromise) return defaultUserPromise;
 
   defaultUserPromise = (async () => {
-    // Hanya seed ketika database masih kosong; kalau Anda sudah punya user
-    // (contoh: username "daffa" dengan password "daffa123"), backend tidak
-    // akan menambah akun admin default lagi.
-    const existingCount = await User.countDocuments();
-    if (existingCount > 0) return null;
+    const defaultUsername =
+      (process.env.DEFAULT_ADMIN_USERNAME || "daffa").trim();
+    const defaultPassword =
+      (process.env.DEFAULT_ADMIN_PASSWORD || "daffa123").trim();
+    const defaultName =
+      (process.env.DEFAULT_ADMIN_NAME || "Admin").trim();
 
-    const defaultUsername = process.env.DEFAULT_ADMIN_USERNAME || "admin";
-    const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD || "mus-dashboard";
-    const defaultName = process.env.DEFAULT_ADMIN_NAME || "Administrator";
+    // Cek apakah user default sudah ada
+    let user = await User.findOne({ username: defaultUsername });
 
-    const existingDefault = await User.findOne({ username: defaultUsername });
-    if (existingDefault) return existingDefault;
+    // Kalau belum ada → buat baru
+    if (!user) {
+      const hashed = await bcrypt.hash(defaultPassword, 10);
+      user = await User.create({
+        name: defaultName,
+        username: defaultUsername,
+        password: hashed,
+      });
+      console.log(
+        `✅ Default admin dibuat: username="${defaultUsername}"`
+      );
+      return user;
+    }
 
-    const hashed = await bcrypt.hash(defaultPassword, 10);
-    const created = await User.create({
-      name: defaultName,
-      username: defaultUsername,
-      password: hashed,
-    });
+    // Kalau sudah ada → opsional: sinkronkan password dengan ENV
+    try {
+      const same = await bcrypt.compare(defaultPassword, user.password || "");
+      if (!same) {
+        user.password = await bcrypt.hash(defaultPassword, 10);
+        await user.save();
+        console.log(
+          `🔑 Password admin default di-reset untuk username="${defaultUsername}"`
+        );
+      }
+    } catch (e) {
+      // Kalau password lama bukan hash yg valid, paksa reset
+      user.password = await bcrypt.hash(defaultPassword, 10);
+      await user.save();
+      console.log(
+        `🔑 Password admin default di-reset (fallback) untuk username="${defaultUsername}"`
+      );
+    }
 
-    console.log(
-      `✅ Default admin dibuat: username="${defaultUsername}" (ganti password di env atau lewat UI)`
-    );
-    return created;
+    return user;
   })();
 
   return defaultUserPromise;
