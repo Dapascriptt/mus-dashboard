@@ -13,6 +13,17 @@ const jwt = require("jsonwebtoken");
 
 let connectionPromise;
 let defaultUserPromise;
+let loggedMongoTarget = false;
+
+function safeMongoTarget(uri = "") {
+  // Strip credentials if present and keep only protocol + host(s)
+  const withoutCreds = uri.replace(/\/\/(.*?)@/, "//***:***@");
+  const matchHost = withoutCreds.match(/mongodb(?:\+srv)?:\/\/([^\/]+)/);
+  if (matchHost && matchHost[1]) {
+    return `mongodb://${matchHost[1]}`;
+  }
+  return withoutCreds || "<empty>";
+}
 
 async function ensureDefaultUser() {
   if (defaultUserPromise) return defaultUserPromise;
@@ -43,10 +54,23 @@ async function ensureDefaultUser() {
 
 async function ensureDbConnection(req, res, next) {
   try {
+    const mongoUri = process.env.MONGODB_URI;
+
+    if (!mongoUri) {
+      console.error('❌ MONGODB_URI belum di-set di environment (Netlify / .env lokal)');
+      return res
+        .status(500)
+        .json({ message: 'MONGODB_URI belum di-set di environment' });
+    }
+
     if (mongoose.connection.readyState === 1) return next();
 
     if (!connectionPromise) {
-      connectionPromise = mongoose.connect(process.env.MONGODB_URI);
+      if (!loggedMongoTarget) {
+        console.log(`🔗 Connecting to MongoDB target: ${safeMongoTarget(mongoUri)}`);
+        loggedMongoTarget = true;
+      }
+      connectionPromise = mongoose.connect(mongoUri);
     }
 
     await connectionPromise;
@@ -63,6 +87,15 @@ const app = express();
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
+// Saat dijalankan sebagai Netlify Function, path akan berbentuk
+// "/.netlify/functions/api/...". Middleware ini menormalkan kembali
+// ke "/api/..." agar routing Express tidak 404.
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith('/.netlify/functions/api')) {
+    req.url = req.originalUrl.replace('/.netlify/functions/api', '');
+  }
+  next();
+});
 app.use(ensureDbConnection);
 
 // ROUTE TEST
