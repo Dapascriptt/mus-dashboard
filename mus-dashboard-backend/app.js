@@ -187,6 +187,7 @@ app.post("/api/auth/login", async (req, res) => {
     const { username, password } = req.body;
 
     const normalizedUsername = (username || "").trim();
+    console.log("[AUTH LOGIN] body:", req.body, "normalizedUsername:", normalizedUsername);
 
     // cari USER PERSIS sesuai username (case-sensitive, semuanya lower-case sudah cukup)
     const user = await User.findOne({ username: normalizedUsername });
