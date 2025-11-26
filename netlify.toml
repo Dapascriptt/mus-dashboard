@@ -1,4 +1,6 @@
 [build]
+  # Use repo root as the base so both frontend & Functions are available
+  base = "."
   # Install backend dependencies for Netlify Functions first, then install & build the frontend
   command = "npm ci --prefix mus-dashboard-backend && npm ci --prefix mus-dashboard-frontend && npm run build --prefix mus-dashboard-frontend"
   publish = "mus-dashboard-frontend/dist"
