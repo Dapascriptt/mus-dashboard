@@ -4,21 +4,18 @@ const envBase = import.meta.env.VITE_API_URL?.trim();
 const isBrowser = typeof window !== "undefined";
 const isLocalhost =
   isBrowser && ["localhost", "127.0.0.1"].includes(window.location.hostname);
-const envLooksLocalhost = /localhost|127\.0\.0\.1/i.test(envBase || "");
 
-// Di Netlify (bukan localhost), abaikan VITE_API_URL jika mengarah ke localhost
-// supaya front-end tidak menembak host yang salah. Default tetap "/api" agar
-// mengikuti redirect Netlify Functions.
-const API_BASE_URL = envBase && (isLocalhost || !envLooksLocalhost)
-  ? envBase
-  : "/api";
+let API_BASE_URL;
 
-if (envBase && envLooksLocalhost && !isLocalhost) {
-  // Membantu debug jika ada env Netlify yang masih mengarah ke localhost
-  console.warn(
-    `[mus-dashboard] VITE_API_URL (${envBase}) diabaikan karena tidak bisa diakses ` +
-      "dari deploy; memakai '/api' sebagai gantinya"
-  );
+// 1. Kalau ada VITE_API_URL, selalu pakai itu
+if (envBase) {
+  API_BASE_URL = envBase;
+} else if (isLocalhost) {
+  // 2. Di localhost, pakai /api (atau bisa kamu ganti ke http://localhost:5000/api)
+  API_BASE_URL = "/api";
+} else {
+  // 3. Di Netlify / production, langsung tembak Netlify Function
+  API_BASE_URL = "/.netlify/functions/api";
 }
 
 const api = axios.create({
