@@ -10,5 +10,6 @@
 1. File `netlify.toml` di root repo sudah men-setup build untuk folder ini dan redirect API/SPA, jadi Anda cukup:
    - Hubungkan repo ke Netlify (biarkan Base directory kosong supaya `netlify.toml` root dipakai; jangan arahkan ke `mus-dashboard-backend` kalau ingin frontend dipublish).
    - Pastikan env backend (`MONGODB_URI`, dsb.) diset jika memakai Functions bawaan.
+   - Publish directory otomatis ditentukan ke `mus-dashboard-frontend/dist`, yaitu folder output build Vite yang dihasilkan oleh perintah `npm run build`.
 2. `VITE_API_URL` opsional jika backend beda domain; biarkan kosong saat memakai Functions yang sama domain.
 3. Redirect SPA juga tersedia di `public/_redirects` dan duplikasi di `netlify.toml` agar rute Vue tidak 404.
