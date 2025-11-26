@@ -40,7 +40,7 @@ import BaseForm from "../components/BaseForm.vue";
 import {
   getCustomerById,
   updateCustomer,
-} from "../services/customerService"; // samakan dengan nama file-mu
+} from "../services/CustomerService";
 
 const route = useRoute();
 const router = useRouter();
