@@ -1,0 +1,18 @@
+[build]
+  # Install backend dependencies for Netlify Functions first, then install & build the frontend
+  command = "npm ci --prefix mus-dashboard-backend && npm ci --prefix mus-dashboard-frontend && npm run build --prefix mus-dashboard-frontend"
+  publish = "mus-dashboard-frontend/dist"
+  functions = "mus-dashboard-backend/netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

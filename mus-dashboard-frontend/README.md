@@ -1,5 +1,14 @@
-# Vue 3 + Vite
+# mus-dashboard-frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Konfigurasi API
+- Semua request sekarang menggunakan base URL dinamis: `import.meta.env.VITE_API_URL` atau fallback ke `"/api"`.
+- Saat frontend dan backend (Netlify Functions) berada di domain Netlify yang sama, Anda cukup biarkan tanpa env var sehingga panggilan pergi ke `/api/...`.
+- Jika backend di domain lain, set `VITE_API_URL` (mis. `https://backend-mu.netlify.app/api`).
+- Untuk pengembangan lokal, tidak perlu env var: Vite sudah mem-proxy `/api` ke `http://localhost:5000`. Jika port backend berbeda, override dengan `VITE_API_URL=http://localhost:PORT/api`.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Deploy ke Netlify
+1. File `netlify.toml` di root repo sudah men-setup build untuk folder ini dan redirect API/SPA, jadi Anda cukup:
+   - Hubungkan repo ke Netlify (tanpa perlu mengubah Base/Build/Publish secara manual).
+   - Pastikan env backend (`MONGODB_URI`, dsb.) diset jika memakai Functions bawaan.
+2. `VITE_API_URL` opsional jika backend beda domain; biarkan kosong saat memakai Functions yang sama domain.
+3. Redirect SPA juga tersedia di `public/_redirects` dan duplikasi di `netlify.toml` agar rute Vue tidak 404.
