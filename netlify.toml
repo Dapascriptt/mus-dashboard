@@ -1,0 +1,22 @@
+[build]
+  # Use repo root as the base so both frontend & Functions are available
+  base = "."
+  # Install backend dependencies for Netlify Functions first, then install & build the frontend.
+  # npm install is used instead of npm ci because the backend lockfile still needs to be regenerated
+  # after adding serverless-http; Netlify will refresh the lock during build.
+  command = "npm install --prefix mus-dashboard-backend && npm install --prefix mus-dashboard-frontend && npm run build --prefix mus-dashboard-frontend"
+  publish = "mus-dashboard-frontend/dist"
+  functions = "mus-dashboard-backend/netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
