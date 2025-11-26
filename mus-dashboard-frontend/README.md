@@ -4,7 +4,7 @@
 - Semua request sekarang menggunakan base URL dinamis: `import.meta.env.VITE_API_URL` atau fallback ke `"/api"`.
 - Saat frontend dan backend (Netlify Functions) berada di domain Netlify yang sama, Anda cukup biarkan tanpa env var sehingga panggilan pergi ke `/api/...`.
 - Jika backend di domain lain, set `VITE_API_URL` (mis. `https://backend-mu.netlify.app/api`).
-- Untuk pengembangan lokal, buat `.env` dengan `VITE_API_URL=http://localhost:5000/api` agar Vite menembak server Express lokal.
+- Untuk pengembangan lokal, tidak perlu env var: Vite sudah mem-proxy `/api` ke `http://localhost:5000`. Jika port backend berbeda, override dengan `VITE_API_URL=http://localhost:PORT/api`.
 
 ## Deploy ke Netlify
 1. Buat site baru → pilih repo ini.
