@@ -77,7 +77,7 @@ import { storeToRefs } from 'pinia'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import BaseDataTable from '../components/BaseDataTable.vue'
 import { useOrderStore } from '../stores/orderStore'
-import { deleteOrder } from '../services/orderService'
+import { deleteOrder } from '../services/OrderService'
 
 const orderStore = useOrderStore()
 const { orders, loading, error } = storeToRefs(orderStore)

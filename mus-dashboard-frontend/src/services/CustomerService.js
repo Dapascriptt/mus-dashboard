@@ -1,14 +1,14 @@
-import axios from "axios";
+import api from "./api";
 
-const API_URL = "http://localhost:5000/api/customers";
+const API_URL = "/customers";
 
-export const getCustomers = () => axios.get(API_URL);
+export const getCustomers = () => api.get(API_URL);
 
-export const getCustomerById = (id) => axios.get(`${API_URL}/${id}`);
+export const getCustomerById = (id) => api.get(`${API_URL}/${id}`);
 
-export const createCustomer = (data) => axios.post(API_URL, data);
+export const createCustomer = (data) => api.post(API_URL, data);
 
 export const updateCustomer = (id, data) =>
-  axios.put(`${API_URL}/${id}`, data);
+  api.put(`${API_URL}/${id}`, data);
 
-export const deleteCustomer = (id) => axios.delete(`${API_URL}/${id}`);
+export const deleteCustomer = (id) => api.delete(`${API_URL}/${id}`);
