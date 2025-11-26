@@ -1,20 +1,16 @@
-// src/services/api.js
-import axios from "axios";
+// mus-dashboard-backend/netlify/functions/api.js
+const serverless = require('serverless-http');
+const { createApp } = require('../../app');
 
-const api = axios.create({
-  baseURL: "/.netlify/functions/api",
-  headers: {
-    "Content-Type": "application/json",
+// buat instance express
+const app = createApp();
+
+// Netlify akan memanggil: /.netlify/functions/api/...
+// pathRewrite dipakai supaya Express tetap pakai prefix /api
+module.exports.handler = serverless(app, {
+  request: {
+    pathRewrite: {
+      '^/.netlify/functions/api': '/api',
+    },
   },
 });
-
-// Inject token kalau ada
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export default api;
