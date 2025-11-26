@@ -1,12 +1,12 @@
-import axios from "axios";
+import api from "./api";
 
-const BASE_URL = "http://localhost:5000/api/analytics";
+const BASE_URL = "/analytics";
 
-export const getAnalyticsOverview = () => axios.get(`${BASE_URL}/overview`);
-export const getAnalyticsRevenue = () => axios.get(`${BASE_URL}/revenue`);
+export const getAnalyticsOverview = () => api.get(`${BASE_URL}/overview`);
+export const getAnalyticsRevenue = () => api.get(`${BASE_URL}/revenue`);
 export const getAnalyticsOrderStatus = () =>
-  axios.get(`${BASE_URL}/order-status`);
+  api.get(`${BASE_URL}/order-status`);
 export const getAnalyticsCustomers = () =>
-  axios.get(`${BASE_URL}/customers`);
+  api.get(`${BASE_URL}/customers`);
 export const getAnalyticsTopProducts = () =>
-  axios.get(`${BASE_URL}/top-products`);
+  api.get(`${BASE_URL}/top-products`);

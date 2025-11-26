@@ -98,9 +98,9 @@
 
 <script setup>
 import { reactive } from "vue";
-import axios from "axios";
 import { ElMessage } from "element-plus";
 import { useAuthStore } from "../stores/authStore";
+import api from "../services/api";
 
 const authStore = useAuthStore();
 
@@ -126,13 +126,10 @@ const handleSaveProfile = async () => {
   }
 
   try {
-    const res = await axios.put(
-      "http://localhost:5000/api/auth/update-profile",
-      {
-        id: profileForm.id,
-        name: profileForm.name,
-      }
-    );
+    const res = await api.put("/auth/update-profile", {
+      id: profileForm.id,
+      name: profileForm.name,
+    });
 
     // update store + localStorage
     authStore.user = res.data;
@@ -170,7 +167,7 @@ const handleUpdatePassword = async () => {
   }
 
   try {
-    await axios.put("http://localhost:5000/api/auth/update-password", {
+    await api.put("/auth/update-password", {
       id: profileForm.id,
       newPassword: passwordForm.newPassword,
     });
