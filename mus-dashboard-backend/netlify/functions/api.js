@@ -1,16 +1,20 @@
-const serverless = require('serverless-http');
-const { createApp } = require('../../app');
+// src/services/api.js
+import axios from "axios";
 
-const handlerApp = createApp();
-
-// Netlify akan memanggil Function dengan path
-// "/.netlify/functions/api/<route>". Kita rewrite prefix tersebut ke
-// "/api" agar rute Express cocok tanpa menambah basePath lain yang bisa
-// mengakibatkan path menjadi ganda dan berujung 404.
-module.exports.handler = serverless(handlerApp, {
-  request: {
-    pathRewrite: {
-      '^/.netlify/functions/api': '/api',
-    },
+const api = axios.create({
+  baseURL: "/.netlify/functions/api",
+  headers: {
+    "Content-Type": "application/json",
   },
 });
+
+// Inject token kalau ada
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default api;
