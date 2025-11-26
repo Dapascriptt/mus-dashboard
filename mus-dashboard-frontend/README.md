@@ -10,6 +10,8 @@
   - Password: `mus-dashboard`
   - Anda bisa menggantinya via env backend `DEFAULT_ADMIN_USERNAME`/`DEFAULT_ADMIN_PASSWORD` atau lewat halaman Settings setelah login.
 
+**Perlu menjalankan `npm run build --prefix mus-dashboard-frontend` secara manual?** Tidak wajib untuk deploy Netlify karena perintah yang sama sudah dijalankan otomatis ketika Anda push. Jalankan manual hanya jika ingin memastikan build sukses sebelum commit/push.
+
 ## Deploy ke Netlify
 1. File `netlify.toml` di root repo sudah men-setup build untuk folder ini dan redirect API/SPA, jadi Anda cukup:
    - Hubungkan repo ke Netlify (biarkan Base directory kosong supaya `netlify.toml` root dipakai; jangan arahkan ke `mus-dashboard-backend` kalau ingin frontend dipublish).

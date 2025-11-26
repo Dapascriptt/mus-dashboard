@@ -110,26 +110,32 @@ app.post("/api/auth/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const user = await User.findOne({ username });
+    const normalizedUsername = (username || "").trim();
+    const user = await User.findOne({
+      username: new RegExp(`^${normalizedUsername.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i"),
+    });
 
     if (!user) return res.status(400).json({ message: "User not found" });
 
-    const isHash = typeof user.password === "string" && user.password.startsWith("$2");
+    const storedPassword = user.password || "";
 
     let match = false;
 
-    if (isHash) {
-      match = await bcrypt.compare(password, user.password);
-    } else {
-      match = password === user.password;
+    // 1) Coba bandingkan sebagai hash bcrypt (termasuk jika user.password tidak berawalan $2)
+    try {
+      match = await bcrypt.compare(password, storedPassword);
+    } catch (err) {
+      // Abaikan error compare, lanjut ke pengecekan plain text
+    }
 
-      // Jika password tersimpan plaintext (misalnya dibuat manual di DB), hash-kan
-      // ulang supaya login berikutnya tetap aman.
-      if (match) {
-        const hashed = await bcrypt.hash(password, 10);
-        user.password = hashed;
-        await user.save();
-      }
+    // 2) Fallback: terima password plaintext yang mungkin tersimpan di DB lama
+    if (!match && password === storedPassword) {
+      match = true;
+
+      // Hash ulang supaya login berikutnya memakai bcrypt
+      const hashed = await bcrypt.hash(password, 10);
+      user.password = hashed;
+      await user.save();
     }
 
     if (!match) return res.status(400).json({ message: "Wrong password" });

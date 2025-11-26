@@ -14,10 +14,14 @@ This backend is an Express + MongoDB API. It now ships with a Netlify Functions 
    - `MONGODB_URI` – connection string MongoDB.
    - `JWT_SECRET` – secret key untuk JWT.
    - Tidak perlu men-set `PORT` di Netlify karena Functions mengabaikannya; `PORT` hanya opsional saat menjalankan server lokal (default 5000).
-   - Opsional untuk kredensial default: `DEFAULT_ADMIN_USERNAME`, `DEFAULT_ADMIN_PASSWORD`, `DEFAULT_ADMIN_NAME`. Jika tidak diisi, backend otomatis membuat akun admin pertama kali dengan username `admin` dan password `mus-dashboard`.
-   - Login juga akan tetap menerima password yang tersimpan **plaintext** di koleksi `users` (misalnya Anda membuat user manual di MongoDB); backend akan meng-hash ulang secara otomatis setelah login pertama sehingga kredensial existing tetap bisa dipakai.
+ - Opsional untuk kredensial default: `DEFAULT_ADMIN_USERNAME`, `DEFAULT_ADMIN_PASSWORD`, `DEFAULT_ADMIN_NAME`. Jika tidak diisi, backend otomatis membuat akun admin pertama kali dengan username `admin` dan password `mus-dashboard`.
+  - Login juga akan tetap menerima password yang tersimpan **plaintext** di koleksi `users` (misalnya Anda membuat user manual di MongoDB); backend akan meng-hash ulang secara otomatis setelah login pertama sehingga kredensial existing tetap bisa dipakai.
 6. Deploy. Fungsi akan tersedia di `/.netlify/functions/api`, dan berkat redirect, frontend cukup memanggil `/api/...` di domain Netlify yang sama.
 7. Koneksi MongoDB dibuat secara lazy per-request dan di-reuse antar invocations sehingga tetap stateless di lingkungan serverless.
+
+### FAQ singkat
+- **Perlu menjalankan `npm run build --prefix mus-dashboard-frontend` di VSCode/lokal?** Tidak wajib untuk deploy: Netlify otomatis menjalankan perintah build yang sama setelah Anda push ke branch utama. Jalankan secara manual hanya jika ingin memastikan build frontend lolos sebelum commit/push.
+- **Setelah commit, apa yang perlu dilakukan?** Cukup `git push` ke branch yang dihubungkan Netlify (mis. `main`); Netlify akan memicu build & deploy menggunakan `netlify.toml` di root repo.
 
 ## Alternative: host the backend separately
 - You can still run this as a traditional server with `npm start` (listens on `PORT` or `5000`).
