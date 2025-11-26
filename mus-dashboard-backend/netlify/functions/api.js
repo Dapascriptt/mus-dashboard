@@ -4,9 +4,11 @@ const { createApp } = require('../../app');
 const handlerApp = createApp();
 
 module.exports.handler = serverless(handlerApp, {
+  // basePath memastikan prefix bawaan Netlify Functions otomatis dibuang
+  // sebelum masuk ke Express. Digabung dengan pathRewrite agar rute /api
+  // selalu cocok meski ada variasi prefix.
+  basePath: '/.netlify/functions/api',
   request: {
-    // Pastikan path Netlify Functions (/.netlify/functions/api/...) dinormalkan
-    // menjadi /api/... sehingga rute Express tetap cocok dan tidak 404.
     pathRewrite: {
       '^/.netlify/functions/api': '/api',
     },

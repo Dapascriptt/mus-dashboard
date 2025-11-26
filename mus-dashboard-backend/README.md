@@ -15,7 +15,7 @@ This backend is an Express + MongoDB API. It now ships with a Netlify Functions 
    - `JWT_SECRET` – secret key untuk JWT.
    - Tidak perlu men-set `PORT` di Netlify karena Functions mengabaikannya; `PORT` hanya opsional saat menjalankan server lokal (default 5000).
    - Pastikan `MONGODB_URI` sama persis dengan yang Anda pakai di lokal (mis. string Atlas yang sama). Log build di Netlify akan menampilkan host Mongo yang dibidik (tanpa kredensial) sehingga Anda bisa mengecek bahwa koneksi mengarah ke cluster yang tepat.
- - Opsional untuk kredensial default: `DEFAULT_ADMIN_USERNAME`, `DEFAULT_ADMIN_PASSWORD`, `DEFAULT_ADMIN_NAME`. Jika tidak diisi, backend otomatis membuat akun admin pertama kali dengan username `admin` dan password `mus-dashboard`.
+- Opsional untuk kredensial default: `DEFAULT_ADMIN_USERNAME`, `DEFAULT_ADMIN_PASSWORD`, `DEFAULT_ADMIN_NAME`. Hanya dipakai kalau database masih **kosong**; jika Anda sudah punya user (mis. `daffa` / `daffa123`), backend tidak akan menambah akun admin default.
   - Login juga akan tetap menerima password yang tersimpan **plaintext** di koleksi `users` (misalnya Anda membuat user manual di MongoDB); backend akan meng-hash ulang secara otomatis setelah login pertama sehingga kredensial existing tetap bisa dipakai.
 6. Deploy. Fungsi akan tersedia di `/.netlify/functions/api`, dan berkat redirect, frontend cukup memanggil `/api/...` di domain Netlify yang sama.
 7. Koneksi MongoDB dibuat secara lazy per-request dan di-reuse antar invocations sehingga tetap stateless di lingkungan serverless.

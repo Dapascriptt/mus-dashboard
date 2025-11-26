@@ -29,12 +29,18 @@ async function ensureDefaultUser() {
   if (defaultUserPromise) return defaultUserPromise;
 
   defaultUserPromise = (async () => {
+    // Hanya seed ketika database masih kosong; kalau Anda sudah punya user
+    // (contoh: username "daffa" dengan password "daffa123"), backend tidak
+    // akan menambah akun admin default lagi.
+    const existingCount = await User.countDocuments();
+    if (existingCount > 0) return null;
+
     const defaultUsername = process.env.DEFAULT_ADMIN_USERNAME || "admin";
     const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD || "mus-dashboard";
     const defaultName = process.env.DEFAULT_ADMIN_NAME || "Administrator";
 
-    const existing = await User.findOne({ username: defaultUsername });
-    if (existing) return existing;
+    const existingDefault = await User.findOne({ username: defaultUsername });
+    if (existingDefault) return existingDefault;
 
     const hashed = await bcrypt.hash(defaultPassword, 10);
     const created = await User.create({
@@ -93,9 +99,7 @@ app.use(express.json());
 // tetap sesuai meski ada tambahan prefix.
 app.use((req, res, next) => {
   const normalize = (value = "") =>
-    value.includes('/.netlify/functions/api')
-      ? value.replace('/.netlify/functions/api', '/api')
-      : value;
+    value.replace(/\/.netlify\/functions\/api(\/)?/gi, '/api$1');
 
   req.url = normalize(req.url);
   // Simpan versi ternormalisasi hanya untuk debug jika diperlukan
