@@ -127,6 +127,18 @@ app.use((req, res, next) => {
   next();
 });
 app.use(ensureDbConnection);
+app.get('/api/debug/users', async (req, res) => {
+  try {
+    const users = await User.find().select('username name createdAt');
+    res.json({
+      count: users.length,
+      users,
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Debug error', error: err.message });
+  }
+});
+
 
 // ROUTE TEST
 app.get('/', (req, res) => {
