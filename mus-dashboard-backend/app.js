@@ -88,11 +88,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 // Saat dijalankan sebagai Netlify Function, path akan berbentuk
-// "/.netlify/functions/api/...". Middleware ini menormalkan kembali
-// ke "/api/..." agar routing Express tidak 404.
+// "/.netlify/functions/api/...". Middleware ini menormalkan kembali ke
+// "/api/..." (bukan "/auth/..." saja) agar routing Express tetap sesuai.
 app.use((req, res, next) => {
   if (req.originalUrl.startsWith('/.netlify/functions/api')) {
-    req.url = req.originalUrl.replace('/.netlify/functions/api', '');
+    req.url = req.originalUrl.replace('/.netlify/functions/api', '/api');
   }
   next();
 });
