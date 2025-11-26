@@ -87,13 +87,19 @@ const app = express();
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
-// Saat dijalankan sebagai Netlify Function, path akan berbentuk
-// "/.netlify/functions/api/...". Middleware ini menormalkan kembali ke
-// "/api/..." (bukan "/auth/..." saja) agar routing Express tetap sesuai.
+// Saat dijalankan sebagai Netlify Function, path bisa berbentuk
+// "/.netlify/functions/api/..." atau variasi dengan prefix ganda.
+// Middleware ini menormalkan kembali ke "/api/..." agar routing Express
+// tetap sesuai meski ada tambahan prefix.
 app.use((req, res, next) => {
-  if (req.originalUrl.startsWith('/.netlify/functions/api')) {
-    req.url = req.originalUrl.replace('/.netlify/functions/api', '/api');
-  }
+  const normalize = (value = "") =>
+    value.includes('/.netlify/functions/api')
+      ? value.replace('/.netlify/functions/api', '/api')
+      : value;
+
+  req.url = normalize(req.url);
+  // Simpan versi ternormalisasi hanya untuk debug jika diperlukan
+  req.normalizedOriginalUrl = normalize(req.originalUrl);
   next();
 });
 app.use(ensureDbConnection);
