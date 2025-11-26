@@ -181,38 +181,43 @@ app.post("/api/auth/register", async (req, res) => {
 });
 
 // LOGIN USER (MONGODB)
+// LOGIN USER (MONGODB)
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
     const normalizedUsername = (username || "").trim();
 
-    // 🔥 GANTI: pakai query simpel persis sama dengan username yang dikirim
+    // cari USER PERSIS sesuai username (case-sensitive, semuanya lower-case sudah cukup)
     const user = await User.findOne({ username: normalizedUsername });
 
-    if (!user) return res.status(400).json({ message: "User not found" });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
 
     const storedPassword = user.password || "";
     let match = false;
 
-    // 1) Coba compare sebagai hash bcrypt
+    // 1) coba anggap password di DB sudah hash bcrypt
     try {
       match = await bcrypt.compare(password, storedPassword);
-    } catch (err) {
-      // Abaikan error compare, lanjut cek plaintext
+    } catch (e) {
+      // kalau format bukan hash valid, lanjut ke plaintext
     }
 
-    // 2) Fallback: support password plaintext lama
+    // 2) fallback kalau dulu pernah simpan plaintext
     if (!match && password === storedPassword) {
       match = true;
 
-      // Hash ulang supaya next login pakai bcrypt
-      const hashed = await bcrypt.hash(password, 10);
-      user.password = hashed;
+      // sekalian upgrade: langsung hash
+      const newHash = await bcrypt.hash(password, 10);
+      user.password = newHash;
       await user.save();
     }
 
-    if (!match) return res.status(400).json({ message: "Wrong password" });
+    if (!match) {
+      return res.status(400).json({ message: "Wrong password" });
+    }
 
     const token = jwt.sign(
       { id: user._id, username: user.username },
@@ -229,11 +234,12 @@ app.post("/api/auth/login", async (req, res) => {
       },
       token,
     });
-
   } catch (err) {
+    console.error("LOGIN ERROR", err);
     res.status(500).json({ message: "Login failed", error: err.message });
   }
 });
+
 
 // GET CURRENT USER
 app.get("/api/auth/me", async (req, res) => {
