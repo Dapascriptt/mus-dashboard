@@ -45,6 +45,8 @@
         <span v-if="authStore.loading">Logging in...</span>
         <span v-else>Login</span>
       </button>
+
+      <p v-if="errorMessage" class="text-red-400 text-sm mt-2">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
@@ -65,7 +67,7 @@ const errorMessage = ref("");
 const handleLogin = async () => {
   errorMessage.value = "";
 
-  const ok = await authStore.login(username.value, password.value);
+  const ok = await authStore.login(username.value.trim(), password.value);
 
   if (ok) {
     router.push("/dashboard");
