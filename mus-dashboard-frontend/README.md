@@ -1,5 +1,15 @@
-# Vue 3 + Vite
+# mus-dashboard-frontend
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Konfigurasi API
+- Semua request sekarang menggunakan base URL dinamis: `import.meta.env.VITE_API_URL` atau fallback ke `"/api"`.
+- Saat frontend dan backend (Netlify Functions) berada di domain Netlify yang sama, Anda cukup biarkan tanpa env var sehingga panggilan pergi ke `/api/...`.
+- Jika backend di domain lain, set `VITE_API_URL` (mis. `https://backend-mu.netlify.app/api`).
+- Untuk pengembangan lokal, tidak perlu env var: Vite sudah mem-proxy `/api` ke `http://localhost:5000`. Jika port backend berbeda, override dengan `VITE_API_URL=http://localhost:PORT/api`.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Deploy ke Netlify
+1. Buat site baru → pilih repo ini.
+2. Advanced build settings:
+   - **Base directory**: `mus-dashboard-frontend`
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+3. Environment variable (opsional): `VITE_API_URL` jika backend beda domain.
