@@ -7,10 +7,8 @@
 - Untuk pengembangan lokal, tidak perlu env var: Vite sudah mem-proxy `/api` ke `http://localhost:5000`. Jika port backend berbeda, override dengan `VITE_API_URL=http://localhost:PORT/api`.
 
 ## Deploy ke Netlify
-1. Buat site baru → pilih repo ini.
-2. Advanced build settings:
-   - **Base directory**: `mus-dashboard-frontend`
-   - **Build command**: `npm run build`
-   - **Publish directory**: `dist`
-3. Environment variable (opsional): `VITE_API_URL` jika backend beda domain.
-4. Redirect SPA sudah disiapkan di `public/_redirects` agar rute Vue tidak 404 di Netlify.
+1. File `netlify.toml` di root repo sudah men-setup build untuk folder ini dan redirect API/SPA, jadi Anda cukup:
+   - Hubungkan repo ke Netlify (tanpa perlu mengubah Base/Build/Publish secara manual).
+   - Pastikan env backend (`MONGODB_URI`, dsb.) diset jika memakai Functions bawaan.
+2. `VITE_API_URL` opsional jika backend beda domain; biarkan kosong saat memakai Functions yang sama domain.
+3. Redirect SPA juga tersedia di `public/_redirects` dan duplikasi di `netlify.toml` agar rute Vue tidak 404.
