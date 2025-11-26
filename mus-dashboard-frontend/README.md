@@ -13,3 +13,4 @@
    - **Build command**: `npm run build`
    - **Publish directory**: `dist`
 3. Environment variable (opsional): `VITE_API_URL` jika backend beda domain.
+4. Redirect SPA sudah disiapkan di `public/_redirects` agar rute Vue tidak 404 di Netlify.
