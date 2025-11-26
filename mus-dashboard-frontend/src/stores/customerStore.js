@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getCustomers } from '../services/customerService'
+import { getCustomers } from '../services/CustomerService'
 
 export const useCustomerStore = defineStore('customerStore', {
   state: () => ({
