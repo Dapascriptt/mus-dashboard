@@ -1,11 +1,11 @@
 // src/stores/authStore.js
 import { defineStore } from "pinia";
-import api from "../services/api"; // ini yang export default axios.create({ baseURL: API_BASE_URL })
+import api from "../services/api";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
-    token: localStorage.getItem("mus_token") || "",
+    token: localStorage.getItem("token") || "",
     loading: false,
     lastError: "",
   }),
@@ -16,7 +16,6 @@ export const useAuthStore = defineStore("auth", {
       this.lastError = "";
 
       try {
-        // PENTING: key-nya harus "username" dan "password"
         const { data } = await api.post("/auth/login", {
           username,
           password,
@@ -25,28 +24,41 @@ export const useAuthStore = defineStore("auth", {
         this.user = data.user;
         this.token = data.token;
 
-        // set header default untuk request berikutnya
+        localStorage.setItem("token", data.token);
+
         api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-        localStorage.setItem("mus_token", data.token);
 
         return true;
       } catch (err) {
-        console.error("Login error:", err?.response?.data || err.message);
         this.lastError =
-          err?.response?.data?.message || "Login gagal. Coba lagi.";
+          err.response?.data?.message ||
+          err.message ||
+          "Login gagal.";
+
         return false;
       } finally {
         this.loading = false;
       }
     },
 
+    async fetchMe() {
+      if (!this.token) return false;
+
+      try {
+        const { data } = await api.get("/auth/me");
+        this.user = data;
+        return true;
+      } catch (err) {
+        this.logout();
+        return false;
+      }
+    },
+
     logout() {
       this.user = null;
       this.token = "";
-      this.lastError = "";
-      localStorage.removeItem("mus_token");
+      localStorage.removeItem("token");
       delete api.defaults.headers.common["Authorization"];
     },
   },
 });
-x 
