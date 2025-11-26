@@ -6,6 +6,7 @@ export const useAuthStore = defineStore("authStore", {
     user: JSON.parse(localStorage.getItem("user")) || null,
     token: localStorage.getItem("token") || null,
     loading: false,
+    lastError: "",
   }),
 
   getters: {
@@ -15,6 +16,7 @@ export const useAuthStore = defineStore("authStore", {
   actions: {
     async login(username, password) {
       this.loading = true;
+      this.lastError = "";
       try {
         const res = await api.post("/auth/login", {
           username,
@@ -29,6 +31,8 @@ export const useAuthStore = defineStore("authStore", {
 
         return true;            // ✅ penting
       } catch (err) {
+        const apiMessage = err.response?.data?.message;
+        this.lastError = apiMessage || err.message || "Login gagal";
         console.error("Login failed:", err.response?.data || err.message);
         return false;           // ✅ biar bisa dideteksi di Login.vue
       } finally {

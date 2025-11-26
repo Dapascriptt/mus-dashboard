@@ -72,7 +72,8 @@ const handleLogin = async () => {
   if (ok) {
     router.push("/dashboard");
   } else {
-    errorMessage.value = "Username atau password salah.";
+    errorMessage.value =
+      authStore.lastError || "Username atau password salah atau API tidak bisa diakses.";
   }
 };
 </script>
