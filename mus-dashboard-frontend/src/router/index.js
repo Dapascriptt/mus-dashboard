@@ -2,64 +2,57 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '../stores/authStore'
 
-// 🔥 AGGRESSIVE LAZY LOADING — SEMUA HALAMAN DINAMIS
+import Dashboard from '../pages/Dashboard.vue'
 
-// Dashboard
-const Dashboard     = () => import('../pages/Dashboard.vue')
+// Product module
+import ProductList from '../pages/ProductList.vue'
+import ProductAdd from '../pages/ProductAdd.vue'
+import ProductEdit from '../pages/ProductEdit.vue'
 
-// PRODUCT MODULE
-const ProductList   = () => import('../pages/ProductList.vue')
-const ProductAdd    = () => import('../pages/ProductAdd.vue')
-const ProductEdit   = () => import('../pages/ProductEdit.vue')
+// Order module
+import OrderList from '../pages/OrderList.vue'
+import OrderAdd from '../pages/OrderAdd.vue'
+import OrderDetail from '../pages/OrderDetail.vue'
 
-// ORDER MODULE
-const OrderList     = () => import('../pages/OrderList.vue')
-const OrderAdd      = () => import('../pages/OrderAdd.vue')
-const OrderDetail   = () => import('../pages/OrderDetail.vue')
+// Customer module
+import CustomerList from '../pages/CustomerList.vue'
+import CustomerAdd from '../pages/CustomerAdd.vue'
+import CustomerEdit from '../pages/CustomerEdit.vue'
 
-// CUSTOMER MODULE
-const CustomerList  = () => import('../pages/CustomerList.vue')
-const CustomerAdd   = () => import('../pages/CustomerAdd.vue')
-const CustomerEdit  = () => import('../pages/CustomerEdit.vue')
+// Other pages
+import Analytics from '../pages/Analytics.vue'
+import Settings from '../pages/Settings.vue'
 
-// OTHER PAGES
-const Analytics     = () => import('../pages/Analytics.vue')
-const Settings      = () => import('../pages/Settings.vue')
-
-// AUTH
-const Login         = () => import('../pages/auth/Login.vue')
-
-// ========================================================
+// Auth
+import Login from '../pages/auth/Login.vue'
 
 const routes = [
   { path: '/', redirect: '/dashboard' },
 
-  { path: '/dashboard',          name: 'Dashboard',      component: Dashboard },
+  { path: '/dashboard', name: 'Dashboard', component: Dashboard },
 
   // Product
-  { path: '/products',           name: 'ProductList',    component: ProductList },
-  { path: '/products/add',       name: 'ProductAdd',     component: ProductAdd },
-  { path: '/products/edit/:id',  name: 'ProductEdit',    component: ProductEdit, props: true },
+  { path: '/products', name: 'ProductList', component: ProductList },
+  { path: '/products/add', name: 'ProductAdd', component: ProductAdd },
+  { path: '/products/edit/:id', name: 'ProductEdit', component: ProductEdit, props: true },
 
   // Order
-  { path: '/orders',             name: 'OrderList',      component: OrderList },
-  { path: '/orders/add',         name: 'OrderAdd',       component: OrderAdd },
-  { path: '/orders/:id',         name: 'OrderDetail',    component: OrderDetail, props: true },
+  { path: '/orders', name: 'OrderList', component: OrderList },
+  { path: '/orders/add', name: 'OrderAdd', component: OrderAdd },
+  { path: '/orders/:id', name: 'OrderDetail', component: OrderDetail, props: true },
 
   // Customer
-  { path: '/customers',          name: 'CustomerList',   component: CustomerList },
-  { path: '/customers/add',      name: 'CustomerAdd',    component: CustomerAdd },
-  { path: '/customers/edit/:id', name: 'CustomerEdit',   component: CustomerEdit, props: true },
+  { path: '/customers', name: 'CustomerList', component: CustomerList },
+  { path: '/customers/add', name: 'CustomerAdd', component: CustomerAdd },
+  { path: '/customers/edit/:id', name: 'CustomerEdit', component: CustomerEdit, props: true },
 
   // Other pages
-  { path: '/analytics',          name: 'Analytics',      component: Analytics },
-  { path: '/settings',           name: 'Settings',       component: Settings },
+  { path: '/analytics', name: 'Analytics', component: Analytics },
+  { path: '/settings', name: 'Settings', component: Settings },
 
   // Auth
-  { path: '/login',              name: 'Login',          component: Login },
+  { path: '/login', name: 'Login', component: Login },
 ]
-
-// ========================================================
 
 const router = createRouter({
   history: createWebHistory(),

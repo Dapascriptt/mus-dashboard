@@ -1,12 +1,5 @@
 [build]
-  # Use repo root as the base so both frontend & Functions are available
-  base = "."
-  # Install backend dependencies for Netlify Functions first, then install & build the frontend from its folder.
-  # npm install (bukan npm ci) dipakai supaya build tidak gagal akibat package-lock backend yang belum disinkronkan dengan serverless-http.
-  command = "cd mus-dashboard-backend && npm install && cd ../mus-dashboard-frontend && npm install && npm run build"
-  # Publish directory berisi hasil build frontend (Vite output)
   publish = "mus-dashboard-frontend/dist"
-  # Functions directory menunjuk ke handler serverless backend
   functions = "mus-dashboard-backend/netlify/functions"
 
 [build.environment]
@@ -16,8 +9,6 @@
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
-
-
 
 [[redirects]]
   from = "/*"
