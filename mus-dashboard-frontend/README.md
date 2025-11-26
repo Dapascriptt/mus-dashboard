@@ -5,6 +5,10 @@
 - Saat frontend dan backend (Netlify Functions) berada di domain Netlify yang sama, Anda cukup biarkan tanpa env var sehingga panggilan pergi ke `/api/...`.
 - Jika backend di domain lain, set `VITE_API_URL` (mis. `https://backend-mu.netlify.app/api`).
 - Untuk pengembangan lokal, tidak perlu env var: Vite sudah mem-proxy `/api` ke `http://localhost:5000`. Jika port backend berbeda, override dengan `VITE_API_URL=http://localhost:PORT/api`.
+- Kredensial default backend (otomatis dibuat bila belum ada user):
+  - Username: `admin`
+  - Password: `mus-dashboard`
+  - Anda bisa menggantinya via env backend `DEFAULT_ADMIN_USERNAME`/`DEFAULT_ADMIN_PASSWORD` atau lewat halaman Settings setelah login.
 
 ## Deploy ke Netlify
 1. File `netlify.toml` di root repo sudah men-setup build untuk folder ini dan redirect API/SPA, jadi Anda cukup:

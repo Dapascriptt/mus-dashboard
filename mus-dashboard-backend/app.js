@@ -12,6 +12,34 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 let connectionPromise;
+let defaultUserPromise;
+
+async function ensureDefaultUser() {
+  if (defaultUserPromise) return defaultUserPromise;
+
+  defaultUserPromise = (async () => {
+    const defaultUsername = process.env.DEFAULT_ADMIN_USERNAME || "admin";
+    const defaultPassword = process.env.DEFAULT_ADMIN_PASSWORD || "mus-dashboard";
+    const defaultName = process.env.DEFAULT_ADMIN_NAME || "Administrator";
+
+    const existing = await User.findOne({ username: defaultUsername });
+    if (existing) return existing;
+
+    const hashed = await bcrypt.hash(defaultPassword, 10);
+    const created = await User.create({
+      name: defaultName,
+      username: defaultUsername,
+      password: hashed,
+    });
+
+    console.log(
+      `✅ Default admin dibuat: username="${defaultUsername}" (ganti password di env atau lewat UI)`
+    );
+    return created;
+  })();
+
+  return defaultUserPromise;
+}
 
 async function ensureDbConnection(req, res, next) {
   try {
@@ -22,6 +50,7 @@ async function ensureDbConnection(req, res, next) {
     }
 
     await connectionPromise;
+    await ensureDefaultUser();
     return next();
   } catch (err) {
     console.error('❌ MongoDB error:', err);
@@ -85,7 +114,24 @@ app.post("/api/auth/login", async (req, res) => {
 
     if (!user) return res.status(400).json({ message: "User not found" });
 
-    const match = await bcrypt.compare(password, user.password);
+    const isHash = typeof user.password === "string" && user.password.startsWith("$2");
+
+    let match = false;
+
+    if (isHash) {
+      match = await bcrypt.compare(password, user.password);
+    } else {
+      match = password === user.password;
+
+      // Jika password tersimpan plaintext (misalnya dibuat manual di DB), hash-kan
+      // ulang supaya login berikutnya tetap aman.
+      if (match) {
+        const hashed = await bcrypt.hash(password, 10);
+        user.password = hashed;
+        await user.save();
+      }
+    }
+
     if (!match) return res.status(400).json({ message: "Wrong password" });
 
     const token = jwt.sign(
