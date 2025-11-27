@@ -128,6 +128,20 @@ app.use((req, res, next) => {
   next();
 });
 
+// Handle body yang kadang datang sebagai Buffer/string di Netlify
+app.use((req, res, next) => {
+  try {
+    if (Buffer.isBuffer(req.body)) {
+      req.body = JSON.parse(req.body.toString());
+    } else if (typeof req.body === "string") {
+      req.body = JSON.parse(req.body);
+    }
+  } catch (e) {
+    // biarkan saja kalau gagal parse
+  }
+  next();
+});
+
 // Normalisasi path untuk Netlify Functions → /api/...
 app.use((req, res, next) => {
   const normalize = (value = "") =>
