@@ -30,7 +30,7 @@ export const useAuthStore = defineStore("auth", {
 
         localStorage.setItem("token", data.token);
 
-        api.defaults.headers.common["Authorization"] = Bearer ${data.token};
+        api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
 
         return true;
       } catch (err) {
