@@ -1,8 +1,9 @@
 // mus-dashboard-frontend/src/services/api.js
 import axios from "axios";
 
+// Gunakan env untuk dev lokal, fallback ke Netlify Functions di produksi
 const api = axios.create({
-  baseURL: "/.netlify/functions/api",
+  baseURL: import.meta.env.VITE_API_URL || "/.netlify/functions/api",
   headers: {
     "Content-Type": "application/json",
   },

@@ -15,6 +15,12 @@ let connectionPromise;
 let defaultUserPromise;
 let loggedMongoTarget = false;
 
+function withDefaultDb(uri, dbName = "mus_dashboard_db") {
+  if (!uri) return uri;
+  if (uri.match(/mongodb(?:\+srv)?:\/\/[^\/]+\/[^?]+/)) return uri;
+  const [base, query] = uri.split("?");
+  return `${base}/${dbName}${query ? "?" + query : ""}`;
+}
 function safeMongoTarget(uri = "") {
   // Strip credentials if present and keep only protocol + host(s)
   const withoutCreds = uri.replace(/\/\/(.*?)@/, "//***:***@");
@@ -80,8 +86,8 @@ async function ensureDefaultUser() {
 
 async function ensureDbConnection(req, res, next) {
   try {
-    const mongoUri = process.env.MONGODB_URI;
-
+    const rawUri = process.env.MONGODB_URI;
+    const mongoUri = withDefaultDb(rawUri, process.env.MONGODB_DBNAME || "mus_dashboard_db");
     if (!mongoUri) {
       console.error('❌ MONGODB_URI belum di-set di environment (Netlify / .env lokal)');
       return res
@@ -128,7 +134,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Handle body yang kadang datang sebagai Buffer/string di Netlify
 app.use((req, res, next) => {
   try {
     if (Buffer.isBuffer(req.body)) {
